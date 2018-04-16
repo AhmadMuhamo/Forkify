@@ -3768,7 +3768,7 @@ eval("var g;\r\n\r\n// This works in non-strict mode\r\ng = (function() {\r\n\tr
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nconsole.log('App Started!');\n\n//# sourceURL=webpack:///./src/js/index.js?");
+eval("\n\nconsole.log('App Started!');\n\n/** API Key = 3beec7bb88fc6188295a798927278c06\r\n    Search URL = http://food2fork.com/api/search\r\n    key: API Key\r\n    q: (optional) Search Query (Ingredients should be separated by commas). If this is omitted top rated recipes will be returned.\r\n    sort: (optional) How the results should be sorted. See Below for details.\r\n    page: (optional) Used to get additional results\r\n    Get Recipe URL = http://food2fork.com/api/get\r\n    key: API Key\r\n    rId: Id of desired recipe as returned by Search Query */\n\n//# sourceURL=webpack:///./src/js/index.js?");
 
 /***/ }),
 
