@@ -1,16 +1,10 @@
-/** Search URL = http://food2fork.com/api/search
-    key: 3beec7bb88fc6188295a798927278c06
-    q: (optional) Search Query (Ingredients should be separated by commas). If this is omitted top rated recipes will be returned.
-    sort: (optional) How the results should be sorted. See Below for details.
-    page: (optional) Used to get additional results
-    Get Recipe URL = http://food2fork.com/api/get
-    key: API Key
-    rId: Id of desired recipe as returned by Search Query */
-console.log('App Started!');
-
 import Search from './models/Search';
 import {elements, viewLoader, removeLoader} from './views/base';
 import * as searchView from './views/search_view';
+import * as recipeView from './views/recipe_view';
+import Recipe from './models/Recipe';
+
+console.log('App Started!');
 
 /** Global state of the app
  * - Search Object
@@ -20,6 +14,9 @@ import * as searchView from './views/search_view';
  */
 const state = {};
 
+/**
+ * Search Controller
+ */
 const searchControl = async() => {
     /** Get query from the view */
     const query = searchView.getInput();
@@ -33,12 +30,18 @@ const searchControl = async() => {
         searchView.clearResults();
         viewLoader(elements.searchResults);
 
-        /** Search for the recipes */
-        await state.search.getResults();
-
-        /** Display results on the UI */
-        removeLoader();
-        searchView.renderResults(state.search.result);
+        try {
+            /** Search for the recipes */
+            await state.search.getResults();
+    
+            /** Display results on the UI */
+            removeLoader();
+            searchView.renderResults(state.search.result);
+        } catch (error) {
+            console.log(error);
+            alert('Something wrong with the search...');
+            removeLoader();
+        }
     }
 };
 
@@ -55,4 +58,57 @@ elements.searchResultPages.addEventListener('click', e => {
         searchView.clearResults();        
         searchView.renderResults(state.search.result, page);        
     }
+});
+
+/**
+ * Recipe Controller
+ */
+const recipeControl = async () => {
+    /** Get Recipe ID from the URL */
+    const id = parseInt(window.location.hash.replace('#',''),10);
+
+    if (id) {
+        /** Prepare UI for changes */
+        recipeView.clearRecipe();
+        viewLoader(elements.recipe);
+
+        /** Highlight selected search item */
+        if (state.search) searchView.highlightSelected(id);
+
+        /** Create new Recipe Object */
+        state.recipe = new Recipe(id);
+
+        try {
+            /** Get Recipe data and parde ingredients*/
+            await state.recipe.getRecipe();
+            state.recipe.parseIngredients();
+    
+            /** Calculate Time and Servings */
+            state.recipe.calcTime();
+            state.recipe.calcServings();
+    
+            /** Render Recipe */
+            removeLoader();
+            recipeView.renderRecipe(state.recipe);
+        } catch (error) {
+            console.log(error);
+            alert('Error processing Recipe');
+        }
+    }
+};
+
+['hashchange', 'load'].forEach(event => window.addEventListener(event, recipeControl));
+
+/** Handling Recipe button clicks */
+elements.recipe.addEventListener('click', e => {
+    if (e.target.matches('.btn-decrease, .btn-decrease *')) {
+        if (state.recipe.servings > 1) {
+            state.recipe.updateServings('dec');
+            recipeView.updateServingsUI(state.recipe);
+        }
+    } else if (e.target.matches('.btn-increase, .btn-increase *')) {
+        state.recipe.updateServings('inc');        
+        recipeView.updateServingsUI(state.recipe);        
+    }
+    console.log(state.recipe);
 });
