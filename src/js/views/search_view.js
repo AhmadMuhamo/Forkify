@@ -15,9 +15,9 @@ export const highlightSelected = id => {
     const resultArr = Array.from(document.querySelectorAll('.results__link'));
     resultArr.forEach( el => el.classList.remove('results__link--active'));
 
-    document.querySelector(`a[href="#${id}"]`).classList.add('results__link--active');
+    document.querySelector(`.results__link[href*="#${id}"]`).classList.add('results__link--active');
 };
-const shortenRecipeTitle = (title, limit = 17) => {
+export const shortenRecipeTitle = (title, limit = 17) => {
     if (title.length > limit) {
         const newTitle = [];
 
