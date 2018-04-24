@@ -9,9 +9,6 @@ import * as shoppingListView from './views/shopping_list_view';
 import * as likesView from './views/likes_view';
 import Likes from './models/Likes';
 
-
-console.log('App Started!');
-
 /** Global state of the app
  * - Search Object
  * - Current recipe Object
@@ -133,11 +130,6 @@ elements.shoppingList.addEventListener('click', e => {
     }
 });
 
-//testing
-state.likes = new Likes;
-likesView.toggleLikeMenu(state.likes.getNumLikes());
-
-
 /**
  * Likes Controller
  */
@@ -168,6 +160,19 @@ const likesController = () => {
     }
     likesView.toggleLikeMenu(state.likes.getNumLikes());
 }
+
+window.addEventListener('load', () => {
+    state.likes = new Likes;
+
+    /** Restore likes from localStorage */
+    state.likes.readStorage();
+
+    /** Toggle like menu button */
+    likesView.toggleLikeMenu(state.likes.getNumLikes());
+
+    /** Render the existing likes */
+    state.likes.likes.forEach(like => likesView.renderLike(like));
+})
 
 /** Handling Recipe button clicks */
 elements.recipe.addEventListener('click', e => {
